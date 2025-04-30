@@ -11,8 +11,6 @@ export default function LoginUser() {
   const [senha, setSenha] = useState("");
 
   const handleLogin = () => {
-    console.log("Email:", email);
-    console.log("Senha:", senha);
 
     if (email === "admin" && senha === "admin") {
       window.location.href = "/catalogo";
@@ -53,6 +51,14 @@ export default function LoginUser() {
         >
           Entrar
         </button>
+        
+        <Link
+          href="/cadastroUser"
+          className="text-cyan-500 rounded text-center text-base mt-4"
+        >
+          <span className="text-black">Não possui uma conta ainda? </span>
+          <span className="text-cyan-500">Cadastrar-se</span>
+        </Link>
       </main>
     </div>
   );

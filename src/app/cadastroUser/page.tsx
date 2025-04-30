@@ -7,8 +7,19 @@ import Link from "next/link";
 export default function CadastroUser() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState("");
+
   const handleCadastro = () => {
-    setIsModalOpen(true);
+    if (!email || !senha || !nome || !telefone) {
+      alert("Todos os campos devem ser preenchidos.");
+      return;
+    } else {
+      alert("Cadastro realizado com sucesso!");
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -23,6 +34,7 @@ export default function CadastroUser() {
         <div className="w-full flex flex-col gap-4">
           <label className="text-sm font-medium">Nome Completo</label>
           <input
+            onChange={(e) => setNome(e.target.value)}
             type="text"
             className="w-full p-3 border border-gray-300 rounded"
             placeholder="Digite seu nome completo"
@@ -30,6 +42,7 @@ export default function CadastroUser() {
 
           <label className="text-sm font-medium">Email</label>
           <input
+            onChange={(e) => setEmail(e.target.value)}
             type="email"
             className="w-full p-3 border border-gray-300 rounded"
             placeholder="Digite seu email"
@@ -37,6 +50,7 @@ export default function CadastroUser() {
 
           <label className="text-sm font-medium">Telefone (WhatsApp)</label>
           <input
+            onChange={(e) => setTelefone(e.target.value)}
             type="tel"
             className="w-full p-3 border border-gray-300 rounded"
             placeholder="Digite seu telefone (WhatsApp)"
@@ -44,6 +58,7 @@ export default function CadastroUser() {
 
           <label className="text-sm font-medium">Senha</label>
           <input
+            onChange={(e) => setSenha(e.target.value)}
             type="password"
             className="w-full p-3 border border-gray-300 rounded"
             placeholder="Digite sua senha"
@@ -71,13 +86,13 @@ export default function CadastroUser() {
           <div className="bg-white p-8 rounded-lg w-80 text-center">
             <h2 className="text-2xl font-semibold mb-6">Você está cadastrado!</h2>
             <p className="text-sm text-gray-600 mb-6">
-              Obrigado, seu login foi realizado. Acesse o catálogo abaixo:
+              Obrigado, sua conta foi criada com sucesso. Faça o login para acessar:
             </p>
             <Link
               href="/catalogo"
               className="px-6 py-3 bg-blue-600 text-white rounded mb-6"
             >
-              Ver Catálogo
+              Fazer Login
             </Link>
             <button
               onClick={closeModal}
