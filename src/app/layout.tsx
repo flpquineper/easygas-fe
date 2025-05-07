@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+  import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/app/components/Header";
 
@@ -27,9 +27,15 @@ export default function RootLayout({
     <html lang="pt-br">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      > 
-        <Header/>
-        {children}
+      >
+        <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+          <div style={{ flex: "0 0 0%" }}>
+            <Header />
+          </div>
+          <div style={{ flex: "1 0 80%", overflow: "auto" }}>
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   );

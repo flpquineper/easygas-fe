@@ -38,7 +38,7 @@ export default function LoginUser() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-10 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center gap-8 w-full max-w-xs">
+      <main className="flex flex-col items-center gap-8 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
         <h2 className="text-3xl font-semibold text-center">Faça seu login</h2>
 
         <div className="w-full flex flex-col gap-4">

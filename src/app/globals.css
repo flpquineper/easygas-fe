@@ -3,6 +3,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --header-text: #ffffff;
+  --header-background: #007EE6;
+  --text-color: #000000;
+  --login-button: #5F54FF;
+  --login-button-hover: #4E4BFF;
+  --cadastro-button: #007EE6;
+  --cadastro-button-hover: #0061D5;
+  --sem-cadastro-button: #6C87F4;
+  --sem-cadastro-button-hover: #5F54FF;
 }
 
 @theme inline {
