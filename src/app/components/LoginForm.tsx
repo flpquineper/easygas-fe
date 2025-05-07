@@ -1,7 +1,7 @@
 'use client';
-
 import { useState } from "react";
 import Link from "next/link";
+
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -27,6 +27,8 @@ export default function LoginForm() {
       } else {
         alert(data.erro || "Email ou senha incorretos.");
       }
+    
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("Erro ao conectar com o servidor.");
     } finally {
