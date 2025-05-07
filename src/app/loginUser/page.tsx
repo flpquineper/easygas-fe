@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import LoginForm from '../components/LoginForm';
 
 export default function LoginUser() {
   const [email, setEmail] = useState("");
@@ -38,45 +39,7 @@ export default function LoginUser() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-10 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center gap-8 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
-        <h2 className="text-3xl font-semibold text-center">Faça seu login</h2>
-
-        <div className="w-full flex flex-col gap-4">
-          <label className="text-sm font-medium">Email</label>
-          <input
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            className="w-full p-3 border border-gray-300 rounded"
-            placeholder="Digite seu email"
-          />
-
-          <label className="text-sm font-medium">Senha</label>
-          <input
-            onChange={(e) => setSenha(e.target.value)}
-            type="password"
-            className="w-full p-3 border border-gray-300 rounded"
-            placeholder="Digite sua senha"
-          />
-        </div>
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className={`w-full py-3 bg-blue-600 text-white rounded text-center text-base ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-
-        <Link
-          href="/cadastroUser"
-          className="text-cyan-500 rounded text-center text-base mt-4"
-        >
-          <span className="text-black">Não possui uma conta ainda? </span>
-          <span className="text-cyan-500">Cadastrar-se</span>
-        </Link>
-      </main>
+      <LoginForm />
     </div>
   );
 }

@@ -5,7 +5,7 @@ export function Header() {
     <nav className="bg-[var(--header-background)] border-gray-200">
       <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-3">
         <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-          <span className="bg-[var(--header-text)] self-center text-2xl font-semibold whitespace-nowrap p-3 ml-8">
+          <span className="text-[var(--header-text)] self-center text-2xl font-semibold whitespace-nowrap p-3 ml-8">
             LiquiGás
           </span>
         </Link>
