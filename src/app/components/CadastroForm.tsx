@@ -73,7 +73,7 @@ return (
                 Criar Conta
             </button>
 
-            <Link href="/loginUser" className="text-cyan-500 text-center text-base mt-4">
+            <Link href="/login/user" className="text-cyan-500 text-center text-base mt-4">
                 <span className="text-black">Já tem uma conta? </span>
                 <span className="text-cyan-500">Entrar</span>
             </Link>

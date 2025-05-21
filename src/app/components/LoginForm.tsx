@@ -71,7 +71,7 @@ export default function LoginForm() {
         {loading ? "Entrando..." : "Entrar"}
       </button>
 
-      <Link href="/cadastroUser" className="text-cyan-500 text-center text-base mt-4">
+      <Link href="/cadastro/user" className="text-cyan-500 text-center text-base mt-4">
         <span className="text-black">Não possui uma conta ainda? </span>
         <span className="text-cyan-500">Cadastrar-se</span>
       </Link>

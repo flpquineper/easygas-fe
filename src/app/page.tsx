@@ -10,14 +10,14 @@ export default function Home() {
 
         <div className="w-full flex flex-col gap-4">
         <Link
-          href="/loginUser"
+          href="/login/user"
           className="w-full py-3 bg-[var(--login-button)] text-white rounded text-center text-base"
         >
           Login
         </Link>
 
         <Link
-          href="/cadastroUser"
+          href="/cadastro/user"
           className="w-full py-3 bg-[var(--cadastro-button)] text-white rounded text-center text-base"
         >
           Fazer Cadastro
