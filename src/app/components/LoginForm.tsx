@@ -1,7 +1,7 @@
 'use client';
 import { useState } from "react";
 import Link from "next/link";
-
+import { toast } from 'react-toastify';
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -23,6 +23,11 @@ export default function LoginForm() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("userName", data.user.name);
+        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("loginSuccess", "true");
+
         window.location.href = "/catalogo";
       } else {
         alert(data.erro || "Email ou senha incorretos.");

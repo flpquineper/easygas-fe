@@ -1,3 +1,5 @@
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import type { Metadata } from "next";
   import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -34,6 +36,8 @@ export default function RootLayout({
           </div>
           <div style={{ flex: "1 0 80%", overflow: "auto" }}>
             {children}
+            <ToastContainer />
+
           </div>
         </div>
       </body>

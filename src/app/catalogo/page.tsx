@@ -1,10 +1,19 @@
 'use client';
 
+import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 import Image from "next/image";
-import { useRef } from "react";
 
 export default function Catalogo() {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  const showToast = localStorage.getItem("loginSuccess");
+  if (showToast === "true") {
+    toast.success("Login realizado com sucesso!");
+    localStorage.removeItem("loginSuccess");
+  }
+}, []);
 
   function scrollLeft() {
     if (scrollRef.current) {
