@@ -39,7 +39,7 @@ export function Header() {
           className="flex items-center space-x-3"
         >
           <span className="text-[var(--header-text)] text-2xl font-semibold whitespace-nowrap p-3 ml-4">
-            LiquiGás
+            Distribuidora de Gás
           </span>
         </button>
 

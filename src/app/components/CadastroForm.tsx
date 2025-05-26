@@ -83,8 +83,8 @@ return (
             <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-8 rounded-lg w-80 text-center">
                     <h2 className="text-2xl font-semibold mb-6">Você está cadastrado!</h2>
-                    <p className="text-sm text-gray-600 mb-6">Acesse o catálogo e faça seu pedido:</p>
-                    <Link href="/catalogo" className="px-6 py-3 bg-blue-600 text-white rounded mb-6">Acessar Catálogo</Link>
+                    <p className="text-sm text-gray-600 mb-6">Acesse a pagina de login e entre com sua conta:</p>
+                    <Link href="/login/user" className="px-6 py-3 bg-blue-600 text-white rounded mb-6">Ir para Login</Link>
                     <button onClick={() => setIsModalOpen(false)} className="mt-4 w-full py-2 bg-gray-300 text-gray-800 rounded">
                         Fechar
                     </button>
