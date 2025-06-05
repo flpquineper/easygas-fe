@@ -1,6 +1,5 @@
 'use client';
 import { useState } from "react";
-import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -10,7 +9,7 @@ export default function LoginForm() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3305/users/login", {
+      const response = await fetch("http://localhost:3305/admins/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -22,12 +21,13 @@ export default function LoginForm() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.user.id);
-        localStorage.setItem("userName", data.user.name);
-        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("userId", data.admin.id);
+        localStorage.setItem("userName", data.admin.name);
+        localStorage.setItem("userEmail", data.admin.email);
         localStorage.setItem("loginSuccess", "true");
 
-        window.location.href = "/catalogo";
+        // Alterar o redirecionamento do admin para a página de dashboard (quando for criada)
+        window.location.href = "/catalogo"; 
       } else {
         alert(data.erro || "Email ou senha incorretos.");
       }
@@ -69,11 +69,6 @@ export default function LoginForm() {
       >
         {loading ? "Entrando..." : "Entrar"}
       </button>
-
-      <Link href="/cadastro/user" className="text-cyan-500 text-center text-base mt-4">
-        <span className="text-black">Não possui uma conta ainda? </span>
-        <span className="text-cyan-500">Cadastrar-se</span>
-      </Link>
     </main>
   );
 }

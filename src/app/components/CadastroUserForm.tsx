@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function CadastroForm() {
+export default function CadastroUserForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
