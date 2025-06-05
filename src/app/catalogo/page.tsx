@@ -11,10 +11,19 @@ type Product = {
   image: string | null;
 };
 
+type User = {
+  id: number;
+  name: string | null;
+  phone: string | null;
+  address: string | null;
+  complementAddress: string | null;
+};
+
 export default function Catalogo() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const showToast = localStorage.getItem("loginSuccess");
@@ -39,6 +48,19 @@ export default function Catalogo() {
     fetchProducts();
   }, []);
 
+  // Buscando os dados do usuário no localStorage diretamente
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user"); // localStorage
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } catch (e) {
+        toast.error("Erro ao carregar dados do usuário");
+      }
+    }
+  }, []);
+
   function scrollLeft() {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
@@ -51,12 +73,28 @@ export default function Catalogo() {
     }
   }
 
+  // Construção da automação de pedidos via Whatsapp
+  function handleBuy(product: Product) {
+    if (!user || !user.phone || !user.address) {
+      toast.error("Usuário ou endereço incompleto. Verifique suas informações.");
+      return;
+    }
+
+    const message =
+      `Olá! Gostaria de comprar o produto *${product.name}* ` +
+      `pelo valor de R$${Number(product.price).toFixed(2).replace('.', ',')}.\n` +
+      `Endereço de entrega: ${user.address}, ${user.complementAddress ?? ''}.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${user.phone}?text=${encodedMessage}`;
+
+    window.open(whatsappUrl, "_blank");
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center px-6 py-10 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center gap-8 w-full max-w-full md:max-w-3xl lg:max-w-5xl xl:max-w-7xl">
-        <h2 className="text-2xl font-semibold text-center">
-          Produtos em Destaque
-        </h2>
+    <div className="min-h-screen flex flex-col items-center px-6 py-10">
+      <main className="flex flex-col items-center gap-8 w-full max-w-7xl">
+        <h2 className="text-2xl font-semibold text-center">Produtos em Destaque</h2>
 
         <div className="w-full">
           <input
@@ -76,7 +114,7 @@ export default function Catalogo() {
 
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory w-full sm:w-[250px] md:w-[500px] lg:w-[700px] xl:w-[900px] 2xl:w-[1200px]"
+            className="flex gap-4 overflow-x-auto snap-x snap-mandatory w-full"
           >
             {loading ? (
               <div className="p-8 text-center w-full">Carregando...</div>
@@ -86,7 +124,7 @@ export default function Catalogo() {
               products.map(product => (
                 <div
                   key={product.id}
-                  className="border rounded-lg p-4 flex flex-col items-center gap-2 min-w-[220px] sm:min-w-[250px] md:min-w-[300px] lg:min-w-[350px] xl:min-w-[400px] 2xl:min-w-[450px] snap-center"
+                  className="border rounded-lg p-4 flex flex-col items-center gap-2 min-w-[250px] snap-center"
                 >
                   <Image
                     src={product.image || "/placeholder.png"}
@@ -99,8 +137,11 @@ export default function Catalogo() {
                   <p className="font-semibold text-blue-600 mt-1 text-center">
                     R${Number(product.price).toFixed(2).replace('.', ',')}
                   </p>
-                  <button className="bg-blue-600 text-white px-3 py-2 rounded text-sm mt-2">
-                    Adicionar
+                  <button 
+                    onClick={() => handleBuy(product)} 
+                    className="bg-blue-600 text-white px-3 py-2 rounded text-sm mt-2"
+                  >
+                    Comprar
                   </button>
                 </div>
               ))
@@ -111,12 +152,8 @@ export default function Catalogo() {
         </div>
 
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 rounded-lg text-center w-full mt-8">
-          <h3 className="text-lg font-semibold mb-2">
-            Oferta Especial
-          </h3>
-          <p className="text-sm mb-4">
-            Ganhe 10% OFF no seu primeiro pedido!
-          </p>
+          <h3 className="text-lg font-semibold mb-2">Oferta Especial</h3>
+          <p className="text-sm mb-4">Ganhe 10% OFF no seu primeiro pedido!</p>
           <button className="bg-white text-blue-700 font-semibold py-2 px-4 rounded">
             Aproveitar
           </button>

@@ -24,7 +24,10 @@ export default function LoginForm() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("userName", data.user.name);
-        localStorage.setItem("userEmail", data.user.email);
+        localStorage.setItem("userEmail", data.user.email); // Adicionei mais campos no localstorage
+        localStorage.setItem("userPhone", data.user.phone);
+        localStorage.setItem("userAddress", data.user.address);
+        localStorage.setItem("userComplementAddress", data.user.complementAddress);
         localStorage.setItem("loginSuccess", "true");
 
         window.location.href = "/catalogo";
