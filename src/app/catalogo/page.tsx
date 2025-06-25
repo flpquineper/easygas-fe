@@ -50,13 +50,28 @@ export default function Catalogo() {
 
   // Buscando os dados do usuário no localStorage diretamente
   useEffect(() => {
-    const storedUser = localStorage.getItem("user"); // localStorage
+    // Tenta buscar o objeto user, se não existir, busca os campos individuais
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
       } catch (e) {
         toast.error("Erro ao carregar dados do usuário");
+      }
+    } else {
+      // Busca os campos individuais
+      const phone = localStorage.getItem("userPhone");
+      const address = localStorage.getItem("userAddress");
+      const complementAddress = localStorage.getItem("userComplementAddress");
+      if (phone && address) {
+        setUser({
+          id: 0,
+          name: null,
+          phone,
+          address,
+          complementAddress,
+        });
       }
     }
   }, []);
@@ -80,13 +95,20 @@ export default function Catalogo() {
       return;
     }
 
+    // Remove caracteres não numéricos do telefone e adiciona o código do país se necessário
+    let phone = user.phone.replace(/\D/g, "");
+    if (phone.length === 11 && !phone.startsWith("55")) {
+      phone = "55" + phone;
+    } else if (phone.length === 10 && !phone.startsWith("55")) {
+      phone = "55" + phone;
+    }
+
     const message =
       `Olá! Gostaria de comprar o produto *${product.name}* ` +
-      `pelo valor de R$${Number(product.price).toFixed(2).replace('.', ',')}.\n` +
-      `Endereço de entrega: ${user.address}, ${user.complementAddress ?? ''}.`;
+      `pelo valor de R$${Number(product.price).toFixed(2).replace('.', ',')}.\n`
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${user.phone}?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodedMessage}`;
 
     window.open(whatsappUrl, "_blank");
   }
