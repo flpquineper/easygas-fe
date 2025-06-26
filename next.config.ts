@@ -2,8 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      'trevogas.com.br', 
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "trevogas.com.br",
+        port: "", // deixe vazio para padrão
+      },
     ],
   },
 };
