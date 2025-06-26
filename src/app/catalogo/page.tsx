@@ -93,7 +93,7 @@ export default function Catalogo() {
       quantity: 1,
     });
     toast.success("Produto adicionado ao carrinho!");
-
+  }
  
 
   const filteredProducts =
@@ -198,4 +198,4 @@ export default function Catalogo() {
     </div>
   );
 }
-}
+
