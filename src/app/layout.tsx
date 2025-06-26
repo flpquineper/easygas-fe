@@ -1,9 +1,12 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Metadata } from "next";
-  import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/app/components/Header";
+import { CartProvider } from "@/contexts/CartContext";
+import { CartButton } from "@/app/components/CartButton";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,19 +30,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-          <div style={{ flex: "0 0 0%" }}>
-            <Header />
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <CartProvider>
+          <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+            <div style={{ flex: "0 0 0%" }}>
+              <Header />
+            </div>
+            <div style={{ flex: "1 0 80%", overflow: "auto" }}>
+              {children}
+              <ToastContainer />
+            </div>
           </div>
-          <div style={{ flex: "1 0 80%", overflow: "auto" }}>
-            {children}
-            <ToastContainer />
-
-          </div>
-        </div>
+          <CartButton />
+        </CartProvider>
       </body>
     </html>
   );

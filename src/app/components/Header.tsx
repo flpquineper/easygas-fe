@@ -21,6 +21,10 @@ export function Header() {
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userPhone");
+    localStorage.removeItem("userAddress");
+    localStorage.removeItem("userComplementAddress");
+    localStorage.removeItem("userData");
     window.location.href = "/";
   };
 

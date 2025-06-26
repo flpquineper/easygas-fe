@@ -1,29 +1,31 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import type { Product } from "@/types/product";
+import type { User } from "@/types/user";
+import { useCart } from "@/contexts/CartContext";
+import { CartItem } from '@/types/cartItem'
 
-type Product = {
-  id: number;
-  name: string | null;
-  price: string; // Decimal geralmente vem como string do backend
-  image: string | null;
-};
+const FILTERS = [
+  { label: "Todos", value: "all" },
+  { label: "Gás de Cozinha", value: "gas" },
+  { label: "Galão de Água", value: "water" },
+];
 
-type User = {
-  id: number;
-  name: string | null;
-  phone: string | null;
-  address: string | null;
-  complementAddress: string | null;
-};
+function toCartItem(product: Product): CartItem {
+  return { product, quantity: 1 };
+}
 
 export default function Catalogo() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [filter, setFilter] = useState("all");
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const showToast = localStorage.getItem("loginSuccess");
@@ -39,7 +41,7 @@ export default function Catalogo() {
         const res = await fetch("http://localhost:3305/products");
         const data = await res.json();
         setProducts(data);
-      } catch (e) {
+      } catch {
         toast.error("Erro ao carregar produtos");
       } finally {
         setLoading(false);
@@ -48,15 +50,27 @@ export default function Catalogo() {
     fetchProducts();
   }, []);
 
-  // Buscando os dados do usuário no localStorage diretamente
   useEffect(() => {
-    const storedUser = localStorage.getItem("user"); // localStorage
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
-      } catch (e) {
+      } catch {
         toast.error("Erro ao carregar dados do usuário");
+      }
+    } else {
+      const phone = localStorage.getItem("userPhone");
+      const address = localStorage.getItem("userAddress");
+      const complementAddress = localStorage.getItem("userComplementAddress");
+      if (phone && address) {
+        setUser({
+          id: 0,
+          name: null,
+          phone,
+          address,
+          complementAddress,
+        });
       }
     }
   }, []);
@@ -73,28 +87,29 @@ export default function Catalogo() {
     }
   }
 
-  // Construção da automação de pedidos via Whatsapp
   function handleBuy(product: Product) {
-    if (!user || !user.phone || !user.address) {
-      toast.error("Usuário ou endereço incompleto. Verifique suas informações.");
-      return;
-    }
-
-    const message =
-      `Olá! Gostaria de comprar o produto *${product.name}* ` +
-      `pelo valor de R$${Number(product.price).toFixed(2).replace('.', ',')}.\n` +
-      `Endereço de entrega: ${user.address}, ${user.complementAddress ?? ''}.`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${user.phone}?text=${encodedMessage}`;
-
-    window.open(whatsappUrl, "_blank");
+    addToCart({
+      product,
+      quantity: 1,
+    });
+    toast.success("Produto adicionado ao carrinho!");
   }
+
+  const filteredProducts =
+    filter === "all"
+      ? products
+      : products.filter((p) =>
+          filter === "gas"
+            ? p.name?.toLowerCase().includes("gás")
+            : p.name?.toLowerCase().includes("água")
+        );
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10">
       <main className="flex flex-col items-center gap-8 w-full max-w-7xl">
-        <h2 className="text-2xl font-semibold text-center">Produtos em Destaque</h2>
+        <h2 className="text-2xl font-semibold text-center">
+          Produtos em Destaque
+        </h2>
 
         <div className="w-full">
           <input
@@ -103,14 +118,26 @@ export default function Catalogo() {
             className="w-full p-3 border border-gray-300 rounded mb-4"
           />
           <div className="flex gap-2 overflow-x-auto pb-2">
-            <button className="py-2 px-4 bg-blue-600 text-white rounded-full text-sm">Todos</button>
-            <button className="py-2 px-4 border border-gray-300 rounded-full text-sm">Gás de Cozinha</button>
-            <button className="py-2 px-4 border border-gray-300 rounded-full text-sm">Galão de Água</button>
+            {FILTERS.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setFilter(f.value)}
+                className={`py-2 px-4 rounded-full text-sm ${
+                  filter === f.value
+                    ? "bg-blue-600 text-white"
+                    : "border border-gray-300"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <button onClick={scrollLeft} className="text-2xl p-2">&lt;</button>
+          <button onClick={scrollLeft} className="text-2xl p-2">
+            &lt;
+          </button>
 
           <div
             ref={scrollRef}
@@ -118,10 +145,12 @@ export default function Catalogo() {
           >
             {loading ? (
               <div className="p-8 text-center w-full">Carregando...</div>
-            ) : products.length === 0 ? (
-              <div className="p-8 text-center w-full">Nenhum produto encontrado.</div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="p-8 text-center w-full">
+                Nenhum produto encontrado.
+              </div>
             ) : (
-              products.map(product => (
+              filteredProducts.map((product) => (
                 <div
                   key={product.id}
                   className="border rounded-lg p-4 flex flex-col items-center gap-2 min-w-[250px] snap-center"
@@ -132,23 +161,29 @@ export default function Catalogo() {
                     width={80}
                     height={80}
                   />
-                  <h3 className="font-semibold text-base text-center">{product.name}</h3>
-                  <p className="text-xs text-gray-500 text-center">Entrega em até 40min</p>
-                  <p className="font-semibold text-blue-600 mt-1 text-center">
-                    R${Number(product.price).toFixed(2).replace('.', ',')}
+                  <h3 className="font-semibold text-base text-center">
+                    {product.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 text-center">
+                    Entrega em até 40min
                   </p>
-                  <button 
-                    onClick={() => handleBuy(product)} 
+                  <p className="font-semibold text-blue-600 mt-1 text-center">
+                    R${Number(product.price).toFixed(2).replace(".", ",")}
+                  </p>
+                  <button
+                    onClick={() => addToCart(toCartItem(product))}
                     className="bg-blue-600 text-white px-3 py-2 rounded text-sm mt-2"
                   >
-                    Comprar
+                    Adicionar ao Carrinho
                   </button>
                 </div>
               ))
             )}
           </div>
 
-          <button onClick={scrollRight} className="text-2xl p-2">&gt;</button>
+          <button onClick={scrollRight} className="text-2xl p-2">
+            &gt;
+          </button>
         </div>
 
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 text-white p-6 rounded-lg text-center w-full mt-8">

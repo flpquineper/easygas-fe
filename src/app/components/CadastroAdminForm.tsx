@@ -69,7 +69,7 @@ return (
                 <div className="bg-white p-8 rounded-lg w-80 text-center">
                     <h2 className="text-2xl font-semibold mb-6">Você está cadastrado como administrador!</h2>
                     <p className="text-sm text-gray-600 mb-6">Acesse a pagina de login e entre com sua conta:</p>
-                    <Link href="login/admin" className="px-6 py-3 bg-blue-600 text-white rounded mb-6">Ir para Login</Link>
+                    <Link href="/admin/dashboard" className="px-6 py-3 bg-blue-600 text-white rounded mb-6">Dashboard</Link>
                     <button onClick={() => setIsModalOpen(false)} className="mt-4 w-full py-2 bg-gray-300 text-gray-800 rounded">
                         Fechar
                     </button>
