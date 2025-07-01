@@ -70,7 +70,7 @@ type CompletedOrderItem = {
 export type CompletedOrder = {
   id: number;
   orderNote: string | null;
-  deliveryTime: string | null; 
+  deliveryTime: string | null;
   total: number;
   user: {
     name: string;
@@ -79,4 +79,24 @@ export type CompletedOrder = {
     methodName: string;
   };
   items: CompletedOrderItem[];
+};
+
+export type OrderSummary = {
+  id: number;
+  orderDate: string;
+  orderNote: string | null;
+  deliveryTime: string | null;
+  status: {
+    statusName: string;
+  };
+  paymentMethod: {
+    methodName: string;
+  };
+  items: {
+    quantity: number;
+    product: {
+      name: string;
+      price: string;
+    };
+  }[];
 };
