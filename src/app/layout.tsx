@@ -5,7 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/app/components/Header";
 import { CartProvider } from "@/contexts/CartContext";
-import { CartButton } from "@/app/components/CartButton";
+import { AuthProvider } from '@/contexts/AuthContext';
 
 
 const geistSans = Geist({
@@ -31,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
         <CartProvider>
           <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
             <div style={{ flex: "0 0 0%" }}>
@@ -41,8 +42,8 @@ export default function RootLayout({
               <ToastContainer />
             </div>
           </div>
-          <CartButton />
         </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

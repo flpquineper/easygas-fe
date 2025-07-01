@@ -1,7 +1,9 @@
 import type { Product } from "./product";
 
-// Representa um item do carrinho
-export type CartItem = {       
-  product: Product;           
-  quantity: number;     
+export type CartItem = {
+  id: number;
+  quantity: number;
+  cartId: number;
+  productId: number;
+  product: Product;  
 };

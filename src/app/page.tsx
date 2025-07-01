@@ -9,26 +9,25 @@ export default function Home() {
         </h2>
 
         <div className="w-full flex flex-col gap-4">
-        <Link
-          href="/login/user"
-          className="w-full py-3 bg-[var(--login-button)] text-white rounded text-center text-base"
-        >
-          Login
-        </Link>
+          <Link
+            href="/catalogo"
+            className="w-full py-3 bg-[var(--produtos-button)] text-white rounded text-center text-base"
+          >
+            Ver Produtos
+          </Link>
+          <Link
+            href="/login/user"
+            className="w-full py-3 bg-[var(--login-button)] text-white rounded text-center text-base"
+          >
+            Login
+          </Link>
 
-        <Link
-          href="/cadastro/user"
-          className="w-full py-3 bg-[var(--cadastro-button)] text-white rounded text-center text-base"
-        >
-          Fazer Cadastro
-        </Link>
-
-        <Link
-          href="/catalogo"
-          className="w-full py-3 bg-[var(--sem-cadastro-button)] text-white rounded text-center text-base"
-        >
-          Pedir Sem Cadastro
-        </Link>
+          <Link
+            href="/cadastro/user"
+            className="w-full py-3 bg-[var(--cadastro-button)] text-white rounded text-center text-base"
+          >
+            Fazer Cadastro
+          </Link>
         </div>
       </main>
     </div>

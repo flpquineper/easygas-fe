@@ -1,9 +1,19 @@
 export interface User {
   id: number;
-  name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  cpf?: string | null;
-  address?: string | null;
-  complementAddress: string | null;
+  name: string
+  email: string
+  phone?: string
+  cpf: string
+  address?: string 
+  complementAddress?: string | null;
 }
+
+export type RegisterData = {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  cpf: string;
+  address: string;
+  complementAddress: string;
+};

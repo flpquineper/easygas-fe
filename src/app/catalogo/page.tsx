@@ -6,7 +6,7 @@ import Image from "next/image";
 import type { Product } from "@/types/product";
 import type { User } from "@/types/user";
 import { useCart } from "@/contexts/CartContext";
-import { CartItem } from '@/types/cartItem'
+import { CartButton } from "../components/CartButton";
 
 const FILTERS = [
   { label: "Todos", value: "all" },
@@ -14,17 +14,12 @@ const FILTERS = [
   { label: "Galão de Água", value: "water" },
 ];
 
-function toCartItem(product: Product): CartItem {
-  return { product, quantity: 1 };
-}
-
 export default function Catalogo() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [filter, setFilter] = useState("all");
-
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -87,14 +82,14 @@ export default function Catalogo() {
     }
   }
 
-  function handleBuy(product: Product) {
-    addToCart({
-      product,
-      quantity: 1,
-    });
-    toast.success("Produto adicionado ao carrinho!");
+  async function handleAddToCart(product: Product) {
+    try {
+      await addToCart(product, 1);
+      toast.success("Produto adicionado ao carrinho!");
+    } catch {
+      toast.error("Erro ao adicionar produto ao carrinho!");
+    }
   }
- 
 
   const filteredProducts =
     filter === "all"
@@ -107,6 +102,7 @@ export default function Catalogo() {
 
   return (
     <div className="min-h-screen flex flex-col items-center px-6 py-10">
+      <CartButton/>
       <main className="flex flex-col items-center gap-8 w-full max-w-7xl">
         <h2 className="text-2xl font-semibold text-center">
           Produtos em Destaque
@@ -172,7 +168,7 @@ export default function Catalogo() {
                     R${Number(product.price).toFixed(2).replace(".", ",")}
                   </p>
                   <button
-                    onClick={() => addToCart(toCartItem(product))}
+                    onClick={() => handleAddToCart(product)}
                     className="bg-blue-600 text-white px-3 py-2 rounded text-sm mt-2"
                   >
                     Adicionar ao Carrinho
@@ -198,4 +194,3 @@ export default function Catalogo() {
     </div>
   );
 }
-
