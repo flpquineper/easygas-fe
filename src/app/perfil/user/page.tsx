@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 
 type User = {
   id: number;
-  name: string | null;
-  email: string | null;
-  phone: string | null;
-  cpf: string | null;
-  address: string | null;
+  name: string 
+  email: string 
+  phone: string 
+  cpf: string 
+  address: string 
   complementAddress: string | null;
 };
 

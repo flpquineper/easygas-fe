@@ -59,3 +59,24 @@ export interface Order {
     };
   }>;
 }
+
+type CompletedOrderItem = {
+  quantity: number;
+  product: {
+    name: string;
+  };
+};
+
+export type CompletedOrder = {
+  id: number;
+  orderNote: string | null;
+  deliveryTime: string | null; 
+  total: number;
+  user: {
+    name: string;
+  };
+  paymentMethod: {
+    methodName: string;
+  };
+  items: CompletedOrderItem[];
+};

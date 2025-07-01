@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import type { Product } from "@/types/product";
-import type { User } from "@/types/user";
 import { useCart } from "@/contexts/CartContext";
 import { CartButton } from "../components/CartButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FILTERS = [
   { label: "Todos", value: "all" },
@@ -18,9 +18,9 @@ export default function Catalogo() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
   const [filter, setFilter] = useState("all");
   const { addToCart } = useCart();
+  const { user } = useAuth();
 
   useEffect(() => {
     const showToast = localStorage.getItem("loginSuccess");
@@ -45,30 +45,6 @@ export default function Catalogo() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch {
-        toast.error("Erro ao carregar dados do usuário");
-      }
-    } else {
-      const phone = localStorage.getItem("userPhone");
-      const address = localStorage.getItem("userAddress");
-      const complementAddress = localStorage.getItem("userComplementAddress");
-      if (phone && address) {
-        setUser({
-          id: 0,
-          name: null,
-          phone,
-          address,
-          complementAddress,
-        });
-      }
-    }
-  }, []);
 
   function scrollLeft() {
     if (scrollRef.current) {
@@ -107,6 +83,12 @@ export default function Catalogo() {
         <h2 className="text-2xl font-semibold text-center">
           Produtos em Destaque
         </h2>
+        
+         {user && (
+          <div className="w-full text-right -mb-6">
+            <p className="text-sm text-gray-600">Olá, <span className="font-semibold">{user.name}</span>!</p>
+          </div>
+        )}
 
         <div className="w-full">
           <input
