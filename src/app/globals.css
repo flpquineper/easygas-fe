@@ -14,15 +14,11 @@
   --sem-cadastro-button: #6C87F4;
   --sem-cadastro-button-hover: #5F54FF;
   --produtos-button: #007EE6;
+  --font-sans: 'Geist Sans', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Theme for dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #fdfdfd;
@@ -30,12 +26,16 @@
   }
 }
 
+/* Body */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
 }
 
+/* Keyframes for animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -45,10 +45,6 @@ body {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
 }
 
 @keyframes fade-out {
@@ -71,6 +67,92 @@ body {
   }
 }
 
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
 .animate-slide-in-right {
   animation: slide-in-right 0.4s ease-out forwards;
+}
+
+/* Header */
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+}
+
+/* Button Styles */
+.botao-sem-cadastro,
+.botao-login,
+.botao-cadastro {
+  display: inline-block;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-button-color);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.botao-sem-cadastro {
+  background: var(--sem-cadastro-button);
+}
+
+.botao-login {
+  background: var(--login-button);
+}
+
+.botao-cadastro {
+  background: var(--cadastro-button);
+}
+
+/* Hover effects */
+.botao-sem-cadastro:hover {
+  background: var(--sem-cadastro-button-hover);
+  transform: translateY(-2px); /* Pequeno efeito de elevação */
+}
+
+.botao-login:hover {
+  background: var(--login-button-hover);
+  transform: translateY(-2px); /* Pequeno efeito de elevação */
+}
+
+.botao-cadastro:hover {
+  background: var(--cadastro-button-hover);
+  transform: translateY(-2px); /* Pequeno efeito de elevação */
+}
+
+/* Container */
+.main-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--background);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .botao-sem-cadastro,
+  .botao-login,
+  .botao-cadastro {
+    font-size: 1rem;
+  }
 }
