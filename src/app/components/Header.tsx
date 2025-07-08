@@ -8,7 +8,7 @@ import {
   User,
   Store,
   ClipboardList,
-  UserCog, 
+  UserCog,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -130,16 +130,6 @@ export function Header() {
                   Catálogo
                 </button>
                 
-                <button
-                  className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    window.location.href = "/catalogo";
-                  }}
-                >
-                  <List size={18} />
-                  Catálogo
-                </button>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors mt-auto  hover:bg-gray-100 rounded px-2 py-1 cursor-pointer"
