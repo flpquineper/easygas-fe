@@ -1,7 +1,15 @@
 'use client';
 
 import { useState } from "react";
-import { Menu, X, LogOut, User, List } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogOut,
+  User,
+  Store,
+  ClipboardList,
+  UserCog, 
+} from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -97,19 +105,31 @@ export function Header() {
                     window.location.href = "/perfil/user";
                   }}
                 >
-                  <User size={18} />
+                  <UserCog size={18} />
                   Perfil
                 </button>
                 <button
-                  className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors"
+                  className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors cursor-pointer hover:bg-gray-100 rounded px-2 py-1"
                   onClick={() => {
                     setMenuOpen(false);
                     window.location.href = "/pedidos/user";
                   }}
                 >
-                  <List size={18} />
+                  <ClipboardList size={18} />
                   Meus Pedidos
                 </button>
+
+                <button
+                  className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors  hover:bg-gray-100 rounded px-2 py-1 cursor-pointer"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    window.location.href = "/catalogo";
+                  }}
+                >
+                  <Store size={18} />
+                  Catálogo
+                </button>
+                
                 <button
                   className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors"
                   onClick={() => {
@@ -122,7 +142,7 @@ export function Header() {
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors mt-auto"
+                  className="flex items-center gap-2 text-red-600 hover:text-red-500 transition-colors mt-auto  hover:bg-gray-100 rounded px-2 py-1 cursor-pointer"
                 >
                   <LogOut size={18} />
                   Sair da conta
