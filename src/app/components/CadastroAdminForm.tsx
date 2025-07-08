@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function CadastroAdminForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,8 +34,8 @@ export default function CadastroAdminForm() {
         alert(data.error || "Erro ao realizar o cadastro.");
       }
 
-    } catch (error) {
-      alert("Erro ao conectar ao servidor. Tente novamente.");
+    } catch {
+      toast.error("Erro ao conectar ao servidor. Tente novamente.");
     }
   };
 

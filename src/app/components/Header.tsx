@@ -24,7 +24,7 @@ export function Header() {
           className="flex items-center space-x-3"
         >
           <span className="text-[var(--header-text)] text-2xl font-semibold whitespace-nowrap p-3 ml-4">
-            OlizGás
+            EasyGas
           </span>
         </button>
 
@@ -109,6 +109,16 @@ export function Header() {
                 >
                   <List size={18} />
                   Meus Pedidos
+                </button>
+                <button
+                  className="flex items-center gap-2 text-gray-700 hover:text-black transition-colors"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    window.location.href = "/catalogo";
+                  }}
+                >
+                  <List size={18} />
+                  Catálogo
                 </button>
                 <button
                   onClick={handleLogout}
