@@ -17,7 +17,7 @@ export default function CadastroAdminForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:3305/admins/register", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admins/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

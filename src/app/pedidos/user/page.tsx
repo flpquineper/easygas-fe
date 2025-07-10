@@ -16,7 +16,7 @@ export default function PedidosPage() {
     async function fetchOrders() {
       setIsLoading(true);
       try {
-        const res = await fetch(`http://localhost:3305/api/orders`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

@@ -33,7 +33,7 @@ export default function Checkout() {
   useEffect(() => {
     async function fetchMethods() {
       try {
-        const res = await fetch("http://localhost:3305/payment-methods");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-methods`);
         const data = await res.json();
         setPaymentMethods(data);
       } catch {

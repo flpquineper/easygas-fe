@@ -9,7 +9,7 @@ export default function LoginForm() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3305/admins/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admins/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

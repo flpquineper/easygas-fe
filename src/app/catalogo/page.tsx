@@ -33,7 +33,7 @@ export default function Catalogo() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("http://localhost:3305/products");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
         const data = await res.json();
         setProducts(data);
       } catch {

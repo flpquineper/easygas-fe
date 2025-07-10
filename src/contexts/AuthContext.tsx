@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3305/users/login", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const register = async (userData: RegisterData) => {
-    const response = await fetch("http://localhost:3305/users/register", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),

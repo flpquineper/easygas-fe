@@ -43,7 +43,6 @@ export default function ModalDetalhes({ pedido, onClose }: ModalDetalhesProps) {
         <div>
           <b>Entregador:</b> {pedido.deliveryMan?.name || 'Não alocado'}
         </div>
-        {/* Adicione mais detalhes conforme desejar */}
       </div>
     </div>
   );

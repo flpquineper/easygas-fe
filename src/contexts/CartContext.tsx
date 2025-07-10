@@ -53,7 +53,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      const res = await fetch(`http://localhost:3305/api/carts`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -113,7 +113,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await fetch(`http://localhost:3305/api/carts/item`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/item`, {
         method: 'POST',
         headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ productId: product.id, quantity }),
@@ -137,7 +137,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await fetch(`http://localhost:3305/api/carts/item/${itemToRemove.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/item/${itemToRemove.id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -157,7 +157,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await fetch(`http://localhost:3305/api/carts`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });
