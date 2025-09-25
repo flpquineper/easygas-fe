@@ -7,10 +7,12 @@ import type { CartItem } from "@/types/cartItem";
 import type { PaymentMethod } from "@/types/paymentMethod";
 import { useAuth } from "@/contexts/AuthContext";
 import type { CompletedOrder } from "@/types/order";
+import { api } from "@/app/services/api";
+import { AxiosError } from "axios";
 
 export default function Checkout() {
   const { cart, removeFromCart, clearCart, totalPrice } = useCart();
-  const { user, token, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [address, setAddress] = useState("");
   const [complement, setComplement] = useState("");
@@ -18,8 +20,11 @@ export default function Checkout() {
   const [showScheduler, setShowScheduler] = useState(false);
   const [paymentMethodId, setPaymentMethodId] = useState<number | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(null);
   const [loadingPayments, setLoadingPayments] = useState(true);
+  const [completedOrder, setCompletedOrder] = useState<CompletedOrder | null>(
+    null
+  );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -33,9 +38,8 @@ export default function Checkout() {
   useEffect(() => {
     async function fetchMethods() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-methods`);
-        const data = await res.json();
-        setPaymentMethods(data);
+        const response = await api.get("/payment-methods");
+        setPaymentMethods(response.data);
       } catch {
         toast.error("Erro ao buscar métodos de pagamento");
       } finally {
@@ -46,12 +50,8 @@ export default function Checkout() {
   }, []);
 
   async function handleFinishOrder() {
-    if (!address) {
-      toast.error("O endereço de entrega é obrigatório.");
-      return;
-    }
-    if (!paymentMethodId) {
-      toast.error("Por favor, selecione uma forma de pagamento.");
+    if (!address || !paymentMethodId) {
+      toast.error("Endereço e forma de pagamento são obrigatórios.");
       return;
     }
 
@@ -70,31 +70,19 @@ export default function Checkout() {
         })),
       };
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(orderPayload),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.erro || "Falha ao criar o pedido.");
-      }
-
-      const newOrderData = await res.json();
+      const response = await api.post("/api/orders", orderPayload);
+      const newOrderData = response.data;
 
       toast.success("Pedido realizado com sucesso!");
       clearCart();
       setShowModal(true);
-
       setCompletedOrder(newOrderData);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+    } catch (error) {
+      let errorMessage = "Falha ao criar o pedido.";
+      if (error instanceof AxiosError && error.response?.data?.erro) {
+        errorMessage = error.response.data.erro;
       }
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +92,7 @@ export default function Checkout() {
     if (!completedOrder) return;
 
     const phoneNumber = "5553991148588";
-  
+
     let message = `Olá, OlizGás! Confirmação do pedido #${completedOrder.id}.\n\n`;
     message += `*Cliente:* ${completedOrder.user.name}\n`;
     message += `*Endereço de Entrega:* ${completedOrder.orderNote}\n`;
@@ -114,22 +102,25 @@ export default function Checkout() {
       message += `- ${item.quantity}x ${item.product.name}\n`;
     });
     message += `\n*Total:* R$ ${Number(completedOrder.total).toFixed(2)}`;
-    
+
     if (completedOrder.deliveryTime) {
       const deliveryDate = new Date(completedOrder.deliveryTime);
-      const formattedDate = deliveryDate.toLocaleString('pt-BR', {
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric',
-        hour: '2-digit', 
-        minute: '2-digit'
+      const formattedDate = deliveryDate.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
       message += `\n\n*ENTREGA AGENDADA PARA:* ${formattedDate}`;
     }
 
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
-}
+    window.open(
+      `https://wa.me/${phoneNumber}?text=${encodedMessage}`,
+      "_blank"
+    );
+  }
 
   return (
     <>

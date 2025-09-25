@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import api from '@/app/services/api'; // ajuste o caminho conforme seu projeto
+import { SetStateAction, useEffect, useState } from 'react';
+import { api } from '../services/api'; // ajuste o caminho conforme seu projeto
 import { Order } from '@/types'; // agora usando o tipo certo!
 
 export function useOrders() {
@@ -10,7 +10,7 @@ export function useOrders() {
   useEffect(() => {
     setLoading(true);
     api.get('/orders')
-      .then((response) => {
+      .then((response: { data: SetStateAction<Order[]>; }) => {
         setOrders(response.data); // ajuste para response.data.data se a sua API retorna aninhado
         setError(null);
       })

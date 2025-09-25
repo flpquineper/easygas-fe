@@ -2,104 +2,121 @@
 
 import {
   createContext,
-  useContext,
   useState,
   useEffect,
   ReactNode,
+  useContext,
 } from "react";
-import type { User, RegisterData } from "@/types/user"; // Crie o tipo RegisterData se necessário
+import { api } from "../app/services/api";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
+import { useRouter } from "next/navigation";
+import type { User } from "@/types/user";
 
-type AuthContextType = {
-  user: User | null;
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  cpf: string;
+  address: string;
+  complementAddress?: string;
+}
+
+interface SignInCredentials {
+  email: string;
+  password: string;
+}
+
+interface AuthContextType {
   isAuthenticated: boolean;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
-  logout: () => void;
+  user: User | null;
+  signIn: (credentials: SignInCredentials) => Promise<void>;
+  signOut: () => void;
+  register: (data: RegisterData) => Promise<void>;
   loading: boolean;
-};
+}
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const isAuthenticated = !!user;
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
-
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
+    const { "easygas.token": token } = parseCookies();
+    if (token) {
+      api
+        .get("/users/profile")
+        .then((response) => {
+          setUser(response.data);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  async function login(email: string, password: string) {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  async function signIn({ email, password }: SignInCredentials) {
+    try {
+      const response = await api.post("/users/login", { email, password });
+      const { token, user: userData } = response.data;
 
-    if (!res.ok) throw new Error("Email ou senha inválidos");
-    
+      setCookie(undefined, "easygas.token", token, {
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
 
-    const data = await res.json(); 
+      api.defaults.headers["Authorization"] = `Bearer ${token}`;
+      setUser(userData);
 
-    const userData: User = data.user;
-    const userToken: string = data.token;
-
-    setUser(userData);
-    setToken(userToken);
-
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", userToken);
+      router.push("/catalogo");
+    } catch (err) {
+      console.error(err);
+      alert("Falha no login. Verifique suas credenciais.");
+    }
   }
 
-  const register = async (userData: RegisterData) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
+  async function register(userData: RegisterData) {
+    try {
+      await api.post("/users/register", userData);
+      await signIn({ email: userData.email, password: userData.password });
+    } catch (err) {
+      console.error("Erro na função register do contexto:", err);
+      alert(
+        "Falha ao criar conta. Verifique os dados ou tente um email diferente."
+      );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Erro ao criar conta.");
+      throw err;
     }
-    
-    await login(userData.email, userData.password); 
-  };
+  }
 
-  function logout() {
+  function signOut() {
+    destroyCookie(undefined, "easygas.token");
+    delete api.defaults.headers["Authorization"];
     setUser(null);
-    setToken(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    router.push("/login/user");
   }
 
   return (
     <AuthContext.Provider
       value={{
+        isAuthenticated,
         user,
-        isAuthenticated: !!user && !!token,
-        token,
-        login,
-        register,
-        logout,
+        signIn,
+        signOut,
         loading,
+        register,
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
-  return context;
-}
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

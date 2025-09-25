@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, {
   createContext,
@@ -7,10 +7,12 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
-} from 'react';
-import type { CartItem } from '@/types/cartItem';
-import type { Product } from '@/types/product';
-import { useAuth } from './AuthContext';
+} from "react";
+import type { CartItem } from "@/types/cartItem";
+import type { Product } from "@/types/product";
+import { useAuth } from "./AuthContext";
+import { api } from "@/app/services/api";
+import { toast } from "react-toastify";
 
 type CartContextType = {
   cart: CartItem[];
@@ -43,31 +45,27 @@ function saveLocalCart(cart: CartItem[]) {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   const fetchUserCart = useCallback(async () => {
-    if (!user || !token) {
+    if (!user) {
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
 
-      if (!res.ok) throw new Error('Não foi possível buscar o carrinho do usuário.');
-      
-      const data = await res.json();
-      setCart(data.items || []);
+      const response = await api.get("/api/carts");
+
+      setCart(response.data.items || []);
     } catch (error) {
       console.error("Falha ao buscar carrinho da API:", error);
       setCart([]);
     } finally {
       setIsLoading(false);
     }
-  }, [user, token]);
+  }, [user]); 
 
   useEffect(() => {
     if (user) {
@@ -84,25 +82,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cart, user]);
 
-
   const addToCart = async (product: Product, quantity: number = 1) => {
     if (!user) {
       setIsLoading(true);
-      const existingItem = cart.find(item => item.product.id === product.id);
+      const existingItem = cart.find((item) => item.product.id === product.id);
       let newCart;
       if (existingItem) {
-        newCart = cart.map(item =>
+        newCart = cart.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-         const newCartItem: CartItem = { 
-            id: Date.now(), 
-            product, 
-            quantity, 
-            productId: product.id,
-            cartId: 0
+        const newCartItem: CartItem = {
+          id: Date.now(),
+          product,
+          quantity,
+          productId: product.id,
+          cartId: 0,
         };
         newCart = [...cart, newCartItem];
       }
@@ -113,14 +110,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/item`, {
-        method: 'POST',
-        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ productId: product.id, quantity }),
+      // Usando api.post, que já tem a URL base e o token
+      await api.post("/api/carts/item", {
+        productId: product.id,
+        quantity,
       });
-      await fetchUserCart();
+
+      // Esta linha só será executada em caso de SUCESSO
+      toast.success("Produto adicionado ao carrinho!");
+      await fetchUserCart(); // Atualiza o carrinho após o sucesso
     } catch (error) {
+      // Se a API retornar 403, o código pulará para cá
       console.error("Falha ao adicionar item:", error);
+      toast.error("Não foi possível adicionar o produto ao carrinho.");
     } finally {
       setIsLoading(false);
     }
@@ -128,22 +130,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = async (productId: number) => {
     if (!user) {
-      setCart(prevCart => prevCart.filter(item => item.product.id !== productId));
+      setCart((prevCart) =>
+        prevCart.filter((item) => item.product.id !== productId)
+      );
       return;
     }
-    
-    const itemToRemove = cart.find(item => item.product.id === productId);
+
+    const itemToRemove = cart.find((item) => item.product.id === productId);
     if (!itemToRemove) return;
 
     setIsLoading(true);
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/item/${itemToRemove.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+       try {
+      await api.delete(`/api/carts/item/${itemToRemove.id}`);
+      
+      toast.success("Produto removido do carrinho.");
       await fetchUserCart();
     } catch (error) {
       console.error("Falha ao remover item:", error);
+      toast.error("Não foi possível remover o produto.");
     } finally {
       setIsLoading(false);
     }
@@ -156,14 +160,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     setIsLoading(true);
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+     try {
+      await api.delete('/api/carts');
+
       setCart([]);
+      toast.success("Carrinho esvaziado com sucesso.");
     } catch (error) {
       console.error("Falha ao limpar o carrinho:", error);
+      toast.error("Não foi possível esvaziar o carrinho.");
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +199,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart deve ser usado dentro de um CartProvider');
+    throw new Error("useCart deve ser usado dentro de um CartProvider");
   }
   return context;
 }

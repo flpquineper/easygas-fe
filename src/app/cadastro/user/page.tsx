@@ -1,5 +1,5 @@
 "use client";
-import CadastroUserForm from "../../components/CadastroUserForm";
+import CadastroUserForm from "../../components/CadastroForm";
 
 export default function CadastroUser() {
   return (

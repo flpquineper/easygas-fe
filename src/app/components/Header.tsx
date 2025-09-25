@@ -14,11 +14,11 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    signOut();
     window.location.href = "/";
   };
 

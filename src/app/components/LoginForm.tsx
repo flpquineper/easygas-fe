@@ -13,7 +13,7 @@ export default function LoginForm() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth(); 
+  const { signIn } = useAuth(); 
   
   const redirectTo = searchParams.get("redirectTo") || "/catalogo";
 
@@ -22,7 +22,7 @@ export default function LoginForm() {
     
     setLoading(true);
     try {
-      await login(email, senha); 
+      await signIn({ email, password: senha }); 
 
       router.replace(redirectTo);
 

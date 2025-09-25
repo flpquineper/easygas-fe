@@ -1,18 +1,18 @@
+// src/services/api.ts
 import axios from 'axios';
+import { parseCookies } from 'nookies';
 
-const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`, 
-  timeout: 10000,
+// Pega o token dos cookies para requisições no lado do servidor
+const { 'easygas.token': token } = parseCookies();
+
+export const api = axios.create({
+  // Use uma variável de ambiente para a URL da sua API
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333',
 });
 
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
-
-export default api;
+// Adiciona o token ao cabeçalho de autorização se ele existir
+// Isso garante que as chamadas feitas logo após o carregamento da página
+// (no lado do cliente) já estejam autenticadas.
+if (token) {
+  api.defaults.headers['Authorization'] = `Bearer ${token}`;
+}

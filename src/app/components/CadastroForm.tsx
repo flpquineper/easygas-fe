@@ -1,44 +1,55 @@
 'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { useAuth } from '@/contexts/AuthContext';
+import Link  from 'next/link';
 
 export default function CadastroUserForm() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [address, setAddress] = useState("");
-  const [complementAddress, setComplementAddress] = useState("");
+  const { register } = useAuth();
+  const router = useRouter(); 
 
-  const handleCadastro = async () => {
-    if (!email || !senha || !name || !phone || !cpf || !address || !complementAddress) {
-      alert("Todos os campos devem ser preenchidos.");
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [address, setAddress] = useState('');
+  const [complementAddress, setComplementAddress] = useState('');
+  const [loading, setLoading] = useState(false); 
+
+const handleCadastro = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!email || !senha || !name || !phone || !address ) {
+      toast.error('Todos os campos obrigatórios devem ser preenchidos.');
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name, email, password: senha, phone, cpf, address, complementAddress,
-        }),
-      });
+      const userData = {
+        name,
+        email,
+        password: senha,
+        phone,
+        cpf,
+        address,
+        complementAddress,
+      };
 
-      const data = await response.json();
+      await register(userData);
 
-      if (response.ok) {
-        alert("Cadastro realizado com sucesso!");
-        setIsModalOpen(true);
-      } else {
-        alert(data.error || "Erro ao realizar o cadastro.");
-      }
+      toast.success('Cadastro realizado com sucesso. Bem-vindo(a)!');
+
+      setTimeout(() => {
+        router.push('/catalogo'); 
+      }, 2000); 
+
     } catch {
-      toast.error("Erro ao conectar ao servidor. Tente novamente.");
+      toast.error('Falha no cadastro. Verifique seus dados ou tente outro email.');
+      setLoading(false);
     }
   };
 
@@ -70,8 +81,8 @@ return (
                 <input onChange={(e) => setSenha(e.target.value)} type="password" placeholder="Senha" className="w-full p-3 border rounded" />
             </div>
 
-            <button onClick={handleCadastro} className="w-full py-3 bg-blue-600 text-white rounded">
-                Criar Conta
+            <button type="submit" disabled={loading} onClick={handleCadastro} className="w-full py-3 bg-blue-600 text-white rounded">
+                {loading ? 'Cadastrando...' : 'Cadastrar'}
             </button>
 
             <Link href="/login/user" className="text-cyan-500 text-center text-base mt-4">
@@ -79,19 +90,6 @@ return (
                 <span className="text-cyan-500">Entrar</span>
             </Link>
         </main>
-
-        {isModalOpen && (
-            <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-8 rounded-lg w-80 text-center">
-                    <h2 className="text-2xl font-semibold mb-6">Você está cadastrado!</h2>
-                    <p className="text-sm text-gray-600 mb-6">Acesse a pagina de login e entre com sua conta:</p>
-                    <Link href="/login/user" className="px-6 py-3 bg-blue-600 text-white rounded mb-6">Ir para Login</Link>
-                    <button onClick={() => setIsModalOpen(false)} className="mt-4 w-full py-2 bg-gray-300 text-gray-800 rounded">
-                        Fechar
-                    </button>
-                </div>
-            </div>
-        )}
     </>
 );
 }
