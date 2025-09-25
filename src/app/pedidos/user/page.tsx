@@ -4,37 +4,37 @@ import { useEffect, useState } from "react";
 import type { OrderSummary } from "@/types/order";
 import { useAuth } from "@/contexts/AuthContext";
 import { OrderCard } from "@/app/components/OrderCard";
+import { api } from '@/app/services/api'
 
 export default function PedidosPage() {
   const [orders, setOrders] = useState<OrderSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
+
 
   useEffect(() => {
-    if (!token) return;
+    // A checagem agora é mais limpa e semântica
+    if (!isAuthenticated) {
+        setIsLoading(false);
+        return;
+    };
 
     async function fetchOrders() {
       setIsLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (!res.ok) {
-          throw new Error("Falha ao buscar os pedidos.");
-        }
-        const data = await res.json();
-        setOrders(data);
+        // PASSO 3: Substituir todo o bloco 'fetch' pela chamada 'api.get'
+        // O token é adicionado automaticamente pelo serviço 'api'
+        const response = await api.get('/api/orders'); // Verifique se a URL está correta
+        setOrders(response.data);
       } catch (error) {
-        console.error(error);
+        console.error("Falha ao buscar os pedidos:", error);
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchOrders();
-  }, [token]); 
+  }, [isAuthenticated]);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
