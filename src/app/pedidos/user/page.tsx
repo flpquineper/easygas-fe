@@ -13,7 +13,6 @@ export default function PedidosPage() {
 
 
   useEffect(() => {
-    // A checagem agora é mais limpa e semântica
     if (!isAuthenticated) {
         setIsLoading(false);
         return;
@@ -22,9 +21,7 @@ export default function PedidosPage() {
     async function fetchOrders() {
       setIsLoading(true);
       try {
-        // PASSO 3: Substituir todo o bloco 'fetch' pela chamada 'api.get'
-        // O token é adicionado automaticamente pelo serviço 'api'
-        const response = await api.get('/api/orders'); // Verifique se a URL está correta
+        const response = await api.get('/api/orders'); 
         setOrders(response.data);
       } catch (error) {
         console.error("Falha ao buscar os pedidos:", error);
