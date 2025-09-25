@@ -1,6 +1,6 @@
 import { SetStateAction, useEffect, useState } from 'react';
-import { api } from '../services/api'; // ajuste o caminho conforme seu projeto
-import { Order } from '@/types'; // agora usando o tipo certo!
+import { api } from '../services/api';
+import { Order } from '@/types';
 
 export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -11,7 +11,7 @@ export function useOrders() {
     setLoading(true);
     api.get('/orders')
       .then((response: { data: SetStateAction<Order[]>; }) => {
-        setOrders(response.data); // ajuste para response.data.data se a sua API retorna aninhado
+        setOrders(response.data); 
         setError(null);
       })
       .catch(() => {

@@ -1,47 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
-type User = {
-  id: number;
-  name: string 
-  email: string 
-  phone: string 
-  cpf: string 
-  address: string 
-  complementAddress: string | null;
-};
+export default function PerfilPage() {
+  const { user, loading } = useAuth();
 
-export default function Perfil() {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    async function fetchUserData() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error('Erro ao carregar perfil');
-        }
-
-        const data = await res.json();
-        setUser(data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    fetchUserData();
-  }, []);
+  if (loading) {
+    return <div>Carregando perfil...</div>;
+  }
 
   if (!user) {
-    return <div className="text-center py-10">Carregando perfil...</div>;
+    return <div>Usuário não autenticado.</div>;
   }
 
   return (
