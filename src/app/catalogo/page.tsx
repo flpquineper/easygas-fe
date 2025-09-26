@@ -7,6 +7,7 @@ import type { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 import { CartButton } from "../components/CartButton";
 import { useAuth } from "@/contexts/AuthContext";
+import { api } from "@/app/services/api"
 
 const FILTERS = [
   { label: "Todos", value: "all" },
@@ -30,20 +31,19 @@ export default function Catalogo() {
     }
   }, []);
 
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
-        const data = await res.json();
-        setProducts(data);
-      } catch {
-        toast.error("Erro ao carregar produtos");
-      } finally {
-        setLoading(false);
-      }
+ useEffect(() => {
+  async function fetchProducts() {
+    try {
+      const response = await api.get('/products');
+      setProducts(response.data);
+    } catch {
+      toast.error("Erro ao carregar produtos");
+    } finally {
+      setLoading(false);
     }
-    fetchProducts();
-  }, []);
+  }
+  fetchProducts();
+}, [])
 
 
   function scrollLeft() {
@@ -59,12 +59,7 @@ export default function Catalogo() {
   }
 
   async function handleAddToCart(product: Product) {
-    try {
-      await addToCart(product, 1);
-      toast.success("Produto adicionado ao carrinho!");
-    } catch {
-      toast.error("Erro ao adicionar produto ao carrinho!");
-    }
+     await addToCart(product, 1);
   }
 
   const filteredProducts =
