@@ -11,7 +11,7 @@ import React, {
 import type { CartItem } from "@/types/cartItem";
 import type { Product } from "@/types/product";
 import { useAuth } from "./AuthContext";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 import { toast } from "react-toastify";
 
 type CartContextType = {

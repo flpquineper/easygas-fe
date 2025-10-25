@@ -7,7 +7,7 @@ import type { CartItem } from "@/types/cartItem";
 import type { PaymentMethod } from "@/types/paymentMethod";
 import { useAuth } from "@/contexts/AuthContext";
 import type { CompletedOrder } from "@/types/order";
-import { api } from "@/app/services/api";
+import { api } from "@/services/api";
 import { AxiosError } from "axios";
 
 export default function Checkout() {
@@ -70,7 +70,7 @@ export default function Checkout() {
         })),
       };
 
-      const response = await api.post("/api/orders", orderPayload);
+      const response = await api.post("/orders", orderPayload);
       const newOrderData = response.data;
 
       toast.success("Pedido realizado com sucesso!");

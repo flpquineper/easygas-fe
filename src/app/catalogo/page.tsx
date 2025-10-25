@@ -7,7 +7,7 @@ import type { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 import { CartButton } from "../components/CartButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { api } from "@/app/services/api"
+import { api } from "@/services/api"
 
 const FILTERS = [
   { label: "Todos", value: "all" },
