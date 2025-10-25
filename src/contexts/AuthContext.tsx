@@ -7,10 +7,11 @@ import {
   ReactNode,
   useContext,
 } from "react";
-import { api } from "../app/services/api";
+import { api } from "../services/api";
 import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { useRouter } from "next/navigation";
 import type { User } from "@/types/user";
+import { toast } from "react-toastify";
 
 interface RegisterData {
   name: string;
@@ -34,6 +35,7 @@ interface AuthContextType {
   signOut: () => void;
   register: (data: RegisterData) => Promise<void>;
   loading: boolean;
+  updateUser: (newUserData: User) => void;
 }
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -76,8 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push("/catalogo");
     } catch (err) {
       console.error(err);
-      alert("Falha no login. Verifique suas credenciais.");
+       toast.error("Falha no login. Verifique suas credenciais."); 
     }
+  }
+
+  function updateUser(newUserData: User) {
+  setUser(newUserData);
   }
 
   async function register(userData: RegisterData) {
@@ -86,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signIn({ email: userData.email, password: userData.password });
     } catch (err) {
       console.error("Erro na função register do contexto:", err);
-      alert(
+      toast.error(
         "Falha ao criar conta. Verifique os dados ou tente um email diferente."
       );
 
@@ -110,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         loading,
         register,
+        updateUser,
       }}
     >
       {!loading && children}
