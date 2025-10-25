@@ -1,3 +1,4 @@
+// src/contexts/AuthContext.tsx
 "use client";
 
 import {
@@ -8,7 +9,7 @@ import {
   useContext,
 } from "react";
 import { api } from "../services/api";
-import { setCookie, parseCookies, destroyCookie } from "nookies";
+import { destroyCookie } from "nookies";
 import { useRouter } from "next/navigation";
 import type { User } from "@/types/user";
 import { toast } from "react-toastify";
@@ -46,63 +47,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isAuthenticated = !!user;
 
-  useEffect(() => {
-    const { "easygas.token": token } = parseCookies();
-    if (token) {
-      api
-        .get("/users/profile")
-        .then((response) => {
-          setUser(response.data);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, []);
+useEffect(() => {
+    console.log("AuthContext useEffect iniciado.");
+    setLoading(true);
+
+    console.log("Tentando buscar /users/profile...");
+    api
+      .get("/users/profile")
+      .then((response) => {
+        console.log("Sucesso ao buscar perfil:", response.data);
+        setUser(response.data);
+      })
+      .catch((err) => {
+        console.error(">>> ERRO ao buscar perfil no AuthContext:", err.message);
+        if (err.response) {
+          console.error("Status:", err.response.status);
+          console.error("Data:", err.response.data);
+        }
+        setUser(null); 
+      })
+      .finally(() => {
+        console.log("AuthContext useEffect finalizado.");
+        setLoading(false);
+      });
+
+  }, []); 
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
       const response = await api.post("/users/login", { email, password });
-      const { token, user: userData } = response.data;
+      const { user: userData } = response.data;
 
-      setCookie(undefined, "easygas.token", token, {
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-      });
-
-      api.defaults.headers["Authorization"] = `Bearer ${token}`;
       setUser(userData);
-
       router.push("/catalogo");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-       toast.error("Falha no login. Verifique suas credenciais."); 
+      toast.error(err.response?.data?.erro || "Falha no login. Verifique suas credenciais.");
     }
   }
 
   function updateUser(newUserData: User) {
-  setUser(newUserData);
+    setUser(newUserData);
   }
 
   async function register(userData: RegisterData) {
     try {
       await api.post("/users/register", userData);
       await signIn({ email: userData.email, password: userData.password });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro na função register do contexto:", err);
       toast.error(
-        "Falha ao criar conta. Verifique os dados ou tente um email diferente."
+        err.response?.data?.erro || "Falha ao criar conta. Verifique os dados."
       );
-
       throw err;
     }
   }
 
   function signOut() {
-    destroyCookie(undefined, "easygas.token");
-    delete api.defaults.headers["Authorization"];
+    // destroyCookie(null, "easygas.token"); // Remova ou deixe comentado
     setUser(null);
     router.push("/login/user");
   }
