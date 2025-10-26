@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.tsx
 "use client";
 
 import {
@@ -9,10 +8,10 @@ import {
   useContext,
 } from "react";
 import { api } from "../services/api";
-import { destroyCookie } from "nookies";
 import { useRouter } from "next/navigation";
 import type { User } from "@/types/user";
 import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 interface RegisterData {
   name: string;
@@ -33,7 +32,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   signIn: (credentials: SignInCredentials) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   loading: boolean;
   updateUser: (newUserData: User) => void;
@@ -47,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isAuthenticated = !!user;
 
-useEffect(() => {
+  useEffect(() => {
     console.log("AuthContext useEffect iniciado.");
     setLoading(true);
 
@@ -59,19 +58,13 @@ useEffect(() => {
         setUser(response.data);
       })
       .catch((err) => {
-        console.error(">>> ERRO ao buscar perfil no AuthContext:", err.message);
-        if (err.response) {
-          console.error("Status:", err.response.status);
-          console.error("Data:", err.response.data);
-        }
-        setUser(null); 
+        console.error("Erro ao buscar perfil:", err);
+        setUser(null);
       })
       .finally(() => {
-        console.log("AuthContext useEffect finalizado.");
         setLoading(false);
       });
-
-  }, []); 
+  }, []);
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
@@ -80,9 +73,13 @@ useEffect(() => {
 
       setUser(userData);
       router.push("/catalogo");
-    } catch (err: any) {
+    } catch (err) { 
       console.error(err);
-      toast.error(err.response?.data?.erro || "Falha no login. Verifique suas credenciais.");
+      let message = "Falha no login. Verifique suas credenciais.";
+      if (err instanceof AxiosError && err.response?.data?.erro) {
+        message = err.response.data.erro;
+      }
+      toast.error(message);
     }
   }
 
@@ -94,19 +91,26 @@ useEffect(() => {
     try {
       await api.post("/users/register", userData);
       await signIn({ email: userData.email, password: userData.password });
-    } catch (err: any) {
+    } catch (err) { 
       console.error("Erro na função register do contexto:", err);
-      toast.error(
-        err.response?.data?.erro || "Falha ao criar conta. Verifique os dados."
-      );
+      let message = "Falha ao criar conta. Verifique os dados.";
+      if (err instanceof AxiosError && err.response?.data?.erro) {
+        message = err.response.data.erro;
+      }
+      toast.error(message);
       throw err;
     }
   }
 
-  function signOut() {
-    // destroyCookie(null, "easygas.token"); // Remova ou deixe comentado
-    setUser(null);
-    router.push("/login/user");
+  async function signOut() {
+    try {
+      await api.post('/users/logout');
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    } finally {
+      setUser(null);
+      router.push("/login/user");
+    }
   }
 
   return (
